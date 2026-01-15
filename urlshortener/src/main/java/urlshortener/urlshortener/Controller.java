@@ -1,31 +1,35 @@
-package urlshortener.controller;
+package urlshortener.urlshortener;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
-import java.util.HashMap;
+import java.sql.Date;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
 public class Controller {
 
-    private static final Map<String, String> urlMap = new HashMap<>();
+    private final LinksRepository linksRepository;
+    public Controller(LinksRepository linksRepository) {
+        this.linksRepository = linksRepository;
+    }
 
     // 1. Long URL to short URL conversion
     // POST /convert/
     // Takes a long URL in request body and returns a short URL
     @PostMapping("/convert")
     public ResponseEntity<String> convertUrl(@RequestBody Map<String, String> request) {
-        String longUrl = request.get("url");
-        if (longUrl == null || longUrl.isEmpty()) {
+        String originalUrl = request.get("url");
+        if (originalUrl == null || originalUrl.isEmpty()) {
             return ResponseEntity.badRequest().body("URL is required");
         }
         String shortUrl = generateShortUrl();
-        urlMap.put(shortUrl, longUrl);
-        return ResponseEntity.ok(shortUrl);
+        linksRepository.save(new Link(shortUrl, originalUrl, new Date(System.currentTimeMillis())));
+        java.util.List<Link> links = linksRepository.findAll();
+        return ResponseEntity.ok(links.toString());
     }
 
     // 2. Redirecting
@@ -33,9 +37,9 @@ public class Controller {
     // Redirects to the original long URL
     @GetMapping("/{shortUrl}")
     public RedirectView redirect(@PathVariable String shortUrl) {
-        String longUrl = urlMap.get(shortUrl);
-        if (longUrl != null) {
-            return new RedirectView(longUrl);
+        Optional<Link> link = linksRepository.findByShortUrl(shortUrl);
+        if (link.isPresent()) {
+            return new RedirectView(link.get().getOriginalUrl());
         } else {
             // Handle not found, perhaps redirect to a 404 page or return error
             return new RedirectView("/not-found"); // Assuming a not-found endpoint
