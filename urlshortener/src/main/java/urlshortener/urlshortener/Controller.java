@@ -28,8 +28,7 @@ public class Controller {
         }
         String shortUrl = generateShortUrl();
         linksRepository.save(new Link(shortUrl, originalUrl, new Date(System.currentTimeMillis())));
-        java.util.List<Link> links = linksRepository.findAll();
-        return ResponseEntity.ok(links.toString());
+        return ResponseEntity.ok(shortUrl);
     }
 
     // 2. Redirecting
