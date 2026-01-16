@@ -11,13 +11,13 @@ import jakarta.persistence.Table;
 @Table(name = "links")
 public class Link {
     @Id
-    @Column(name = "shortUrl")
+    @Column(name = "shortUrl", length = 8)
     private String shortUrl;
 
-    @Column(name = "originalUrl")
+    @Column(name = "originalUrl", nullable = false)
     private String originalUrl;
 
-    @Column(name = "date")
+    @Column(name = "createdAt", nullable = false)
     private Date createdAt;
 
     public Link() {}

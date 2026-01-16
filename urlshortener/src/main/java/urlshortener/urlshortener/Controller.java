@@ -27,6 +27,9 @@ public class Controller {
             return ResponseEntity.badRequest().body("URL is required");
         }
         String shortUrl = generateShortUrl();
+        while (linksRepository.findByShortUrl(shortUrl).isPresent()) {
+            shortUrl = generateShortUrl();
+        }
         linksRepository.save(new Link(shortUrl, originalUrl, new Date(System.currentTimeMillis())));
         return ResponseEntity.ok(shortUrl);
     }
