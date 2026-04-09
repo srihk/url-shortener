@@ -1,5 +1,14 @@
 # URL Shortener
 
+# ⚠️ Disclaimer
+
+This project is for **educational purposes only**.
+
+It is not production-ready and lacks necessary security and abuse-prevention mechanisms.  
+Do not deploy it publicly without adding proper safeguards.
+
+The author is not responsible for misuse or damages.
+
 # Build Instructions
 
 - To build the SpringBoot app jar, run the command: `./mvnw clean package -DskipTests`.
